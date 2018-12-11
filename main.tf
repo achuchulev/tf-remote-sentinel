@@ -14,7 +14,7 @@ provider "aws" {
 
 resource "aws_instance" "example" {
   ami           = "ami-0daad02ff4ba87139"
-  instance_type = "t2.micro"
+  instance_type = "t2.small"
 }
 
 #resource "null_resource" "MultiHelloWorld" {
