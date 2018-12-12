@@ -3,7 +3,7 @@ terraform {
     organization = "atanasc"
 
     workspaces {
-      name = "tf-with-sentinel"
+      name = "tf-remote-sentinel"
     }
   }
 }
