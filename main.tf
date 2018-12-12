@@ -1,13 +1,3 @@
-terraform {
-  backend "remote" {
-    organization = "atanasc"
-
-    workspaces {
-      name = "tf-with-sentinel"
-    }
-  }
-}
-
 provider "aws" {
   region = "us-east-2"
 }
