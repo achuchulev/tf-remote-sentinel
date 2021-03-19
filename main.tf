@@ -1,25 +1,52 @@
-terraform {
-  backend "remote" {
-    organization = "atanasc"
-
-    workspaces {
-      name = "tf-with-sentinel"
-    }
-  }
-}
-
 provider "aws" {
-  region = "us-east-2"
+  region = var.region
 }
 
-resource "aws_instance" "example" {
-  ami           = "ami-0daad02ff4ba87139"
-  instance_type = "t2.micro"
+
+resource "random_pet" "petname" {
+  length    = 3
+  separator = "-"
 }
 
-#resource "null_resource" "MultiHelloWorld" {
-#  count = "2"
-#  provisioner "local-exec" {
-#    command = "echo Hello world ${count.index + 1}!"
-#  }
-#}
+resource "aws_s3_bucket" "demo" {
+  bucket = "${var.prefix}-${random_pet.petname.id}"
+  acl    = "public-read"
+  tags = {
+    Name        = "HashiCorp"
+    Environment = "Learn"
+  }
+  policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "PublicReadGetObject",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": [
+                "s3:GetObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::${var.prefix}-${random_pet.petname.id}/*"
+            ]
+        }
+    ]
+}
+EOF
+
+  website {
+    index_document = "index.html"
+    error_document = "error.html"
+
+  }
+  force_destroy = true
+}
+
+resource "aws_s3_bucket_object" "demo" {
+  acl          = "public-read"
+  key          = "index.html"
+  bucket       = aws_s3_bucket.demo.id
+  content      = file("${path.module}/assets/index.html")
+  content_type = "text/html"
+
+}
